@@ -1,0 +1,10 @@
+name: mazedyn
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.11
+  - joblib
+  - matplotlib
+  - pandas
+  - pytorch

@@ -6,6 +6,8 @@ dependencies:
   - python=3.11
   - joblib
   - matplotlib
+  - numpy
   - pandas
   - pytorch
   - pydot
+  - karateclub

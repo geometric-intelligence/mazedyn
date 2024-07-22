@@ -204,6 +204,29 @@ def do_reeb_for_explore_node(path, salient_node, use_turns=False):
 ## Plotting functions               ##
 ##      for test and explore.       ##
 ###################################### 
+def plot_treeb(G):
+    fig = plt.figure(figsize=(20,10))
+    this_ax = plt.gca()
+
+    pos = graphviz_layout(G, prog="dot")
+    
+    edges = G.edges()
+    # colors = [G[u][v]['color'] for u,v in edges]
+    weights = [G[u][v]['weight'] * .8 for u,v in edges]
+
+    nodes = G.nodes()
+    # for n in nodes:
+    #     print(n, G.nodes[n])
+    n_labels = {n: n[:-2] for n in G}
+    n_colors = [G.nodes[n].get("color", "blue") for n in nodes]
+    # print(n_colors)
+    # print ((q-1) // 2, (q-1) % 2)
+    nx.draw_networkx_nodes(G, pos, node_color=n_colors, node_size=1000, alpha=0.7, ax=this_ax)
+    nx.draw_networkx_edges(G, pos, edgelist=edges, width=weights, ax=this_ax)
+    nx.draw_networkx_labels(G, pos, labels=n_labels, font_size=26, font_weight="bold", ax=this_ax)
+
+    this_ax.axis("off")
+
 def plot_quartile_reebs_for_start_end(test_df, start_node, end_node, save=True, use_turns=True):
     fig, axs = plt.subplots(2, 2, figsize=(40,20))
     for q in (1, 2, 3, 4):

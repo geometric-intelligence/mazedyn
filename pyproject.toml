@@ -12,7 +12,6 @@ repository = "https://github.com/geometry-intellince/mazedyn"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-numpy = "^1.23.2"
 click = "<9.0"
 aioboto3 = ">=10.0.0"
 aiobotocore = {extras = ["boto3"], version = "^2.4.0"}
@@ -22,7 +21,6 @@ einops = "^0.7.0"
 fsspec = {extras = ["s3"], version = "^2022.11.0"}
 joblib = "^1.2.0"
 matplotlib = "^3.7.1"
-pandas = "^2.0"
 tqdm = "^4.65.0"
 rich = "^13.3.4"
 zarr = "^2.14.2"
@@ -41,11 +39,11 @@ scikit-learn = "^1.3.2"
 gudhi = "^3.9.0"
 opencv-python = "^4.0"
 openpyxl = "^3.1.5"
-PyWGCNA = "^2.0"
 captum = "^0.7.0"
 ray = {extras = ["tune"], version = "^2.24.0"}
 focal-loss-torch = "^0.1.2"
 pydot = "^3.0.1"
+karateclub = {git = "https://github.com/benedekrozemberczki/karateclub.git"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"

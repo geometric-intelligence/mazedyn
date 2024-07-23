@@ -45,27 +45,7 @@ PyWGCNA = "^2.0"
 captum = "^0.7.0"
 ray = {extras = ["tune"], version = "^2.24.0"}
 focal-loss-torch = "^0.1.2"
-
-
-[[tool.poetry.source]]
-name = "torch-gpu"
-url = "https://download.pytorch.org/whl/cu121"
-priority = "explicit"
-
-[[tool.poetry.source]]
-name = "torch-geometric-gpu"
-url = "https://pytorch-geometric.com/whl/torch-2.1.0+cu121.html"
-priority = "explicit"
-
-[tool.poetry.group.gpu.dependencies]
-torch = {version = "^2.1.0+cu121", source = "torch-gpu"}
-torchvision = {version = "^0.16.1+cu121", source = "torch-gpu"}
-
-
-torch-cluster = {version = "^1.6.3+pt21cu121", source = "torch-geometric-gpu"}
-torch-scatter = {version = "^2.1.2+pt21cu121", source = "torch-geometric-gpu"}
-torch-sparse = {version = "^0.6.18+pt21cu121", source = "torch-geometric-gpu"}
-torch-spline-conv = {version = "^1.2.2+pt21cu121", source = "torch-geometric-gpu"}
+pydot = "^3.0.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"

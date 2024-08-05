@@ -1,11 +1,12 @@
-name: mazedyn
+name: mazedyn-safe
 channels:
   - conda-forge
   - pytorch
-dependencies:
+dependencies:c
   - python=3.11
   - joblib
   - matplotlib
+  - numpy
   - pandas
   - pytorch
   - pydot

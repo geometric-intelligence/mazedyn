@@ -239,7 +239,7 @@ def plot_quartile_reebs_for_start_end(test_df, start_node, end_node, save=True, 
         # pos = nx.shell_layout(G)
         # pos = nx.spring_layout(G)
         # pos = nx.planar_layout(G)
-        pos = graphviz_layout(G, prog="dot")
+        pos = graphviz_layout(G)#, prog="dot")
     
         edges = G.edges()
         # colors = [G[u][v]['color'] for u,v in edges]

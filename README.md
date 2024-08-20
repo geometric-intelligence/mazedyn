@@ -7,3 +7,5 @@ Setup for graph embeddings (mac m3):
 * conda activate mazedyn-test
 * make poetry.lock
 * poetry add notebook
+
+* conda install pydot

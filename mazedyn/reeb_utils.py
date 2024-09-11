@@ -153,7 +153,10 @@ def collapse_traj(traj):
 ##      for test and explore.       ##
 ###################################### 
 def do_reeb_for_start_end(df, start_node, end_node, Q, use_turns=True):
-    this_df = df[(df["StartAt"] == start_node) & (df["EndAt"] == end_node) & (df["quartile"]  == Q)]
+    if Q == 0:
+        this_df = df[(df["StartAt"] == start_node) & (df["EndAt"] == end_node)]
+    else:
+        this_df = df[(df["StartAt"] == start_node) & (df["EndAt"] == end_node) & (df["quartile"]  == Q)]
     
     trajs = []
     count = 0

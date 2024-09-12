@@ -1322,6 +1322,39 @@ test = ["POT", "pytest", "pytest-cov", "testfixtures", "visdom (>=0.1.8,!=0.1.8.
 test-win = ["POT", "pytest", "pytest-cov", "testfixtures"]
 
 [[package]]
+name = "geomstats"
+version = "2.8.0"
+description = "Geometric statistics on manifolds"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "geomstats-2.8.0-py3-none-any.whl", hash = "sha256:bd167c944586cb822c4cd6466fd70fc0819f6eb9a8c0e3de4971de4033ff4276"},
+    {file = "geomstats-2.8.0.tar.gz", hash = "sha256:d34df1ed96354859f694dfea2f58080d34f6e82bb0a5e49061d49ec213ef48a0"},
+]
+
+[package.dependencies]
+joblib = ">=0.17.0"
+matplotlib = ">=3.3.4"
+numpy = ">=1.18.1"
+pandas = ">=1.1.5"
+scikit-learn = ">=0.22.1"
+scipy = ">=1.9"
+
+[package.extras]
+all = ["geomstats[backends,dev,opt]"]
+autograd = ["autograd (>=1.3)"]
+backends = ["geomstats[autograd,pytorch]"]
+dev = ["geomstats[doc,lint,test,test-scripts]"]
+doc = ["jupyter", "nbsphinx", "nbsphinx-link", "pydata-sphinx-theme", "sphinx", "sphinx-gallery"]
+graph = ["networkx"]
+lint = ["pre-commit", "ruff"]
+opt = ["geomstats[graph,pykeops]"]
+pykeops = ["pykeops"]
+pytorch = ["torch (>=1.9.1)"]
+test = ["coverage", "ipython (<8.23)", "jupyter", "pytest", "pytest-cov"]
+test-scripts = ["scikeras", "tensorflow"]
+
+[[package]]
 name = "gitdb"
 version = "4.0.11"
 description = "Git Object Database"
@@ -1406,6 +1439,24 @@ files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
 ]
+
+[[package]]
+name = "hotelling"
+version = "0.5.0"
+description = "Hotelling implements one and two sample Hotelling T2 tests and control charts"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "hotelling-0.5.0-py2.py3-none-any.whl", hash = "sha256:4f6259160a47930e058e6d5cf65069b5baa7fd049b960c22766172fb57c7d770"},
+    {file = "hotelling-0.5.0.tar.gz", hash = "sha256:300998361269129c9947397fe1ec4a4aec95c35d410d719e8bb02a71f79fa3e4"},
+]
+
+[package.dependencies]
+click = "*"
+matplotlib = "*"
+numpy = "*"
+pandas = "*"
+scipy = "*"
 
 [[package]]
 name = "httpcore"
@@ -5838,4 +5889,4 @@ jupyter = ["ipytree (>=0.2.2)", "ipywidgets (>=8.0.0)", "notebook"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a56546f15ab16e2d04d9da4afb265b131fd73eb106b61f144610937e6ddafb47"
+content-hash = "2699e3d9e6a3008c986bd01001de60ac136625f1d52fa68d049067108c36d47d"

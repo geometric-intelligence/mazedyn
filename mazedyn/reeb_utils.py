@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
+import numpy as np
 import os
 import pandas as pd
 import pydot
@@ -147,13 +148,64 @@ def collapse_traj(traj):
             new_traj.append(t)
     return new_traj
 
+def extract_tree_features(graph, root):
+    # Number of Nodes
+    num_nodes = graph.number_of_nodes()
+    
+    # Number of Edges
+    num_edges = graph.number_of_edges()
+    
+    # Tree Depth (Height)
+    def tree_depth(graph, root):
+        depths = nx.single_source_shortest_path_length(graph, root)
+        return max(depths.values())
+    
+    depth = tree_depth(graph, root)
+    
+    # Average Node Degree
+    avg_degree = np.mean([degree for node, degree in graph.degree()])
+    
+    # Diameter
+    diameter = nx.diameter(graph)
+    
+    # Number of Leaves
+    num_leaves = sum(1 for node in graph.nodes() if graph.degree(node) == 1)
+    
+    # Average Path Length
+    avg_path_length = nx.average_shortest_path_length(graph)
+    
+    # Branching Factor
+    branching_factors = [len(list(graph.neighbors(node))) for node in graph.nodes()]
+    avg_branching_factor = np.mean(branching_factors)
+    
+    # Clustering Coefficient
+    clustering_coeffs = nx.clustering(graph)
+    avg_clustering_coeff = np.mean(list(clustering_coeffs.values()))
+    
+    # Put all features in a list
+    features = [
+        num_nodes,
+        num_edges,
+        depth,
+        avg_degree,
+        diameter,
+        num_leaves,
+        avg_path_length,
+        avg_branching_factor,
+        avg_clustering_coeff
+    ]
+    
+    return features
 
 ######################################
 ## Specific generation functions    ##
 ##      for test and explore.       ##
 ###################################### 
 def do_reeb_for_start_end(df, start_node, end_node, Q, use_turns=True):
-    this_df = df[(df["StartAt"] == start_node) & (df["EndAt"] == end_node) & (df["quartile"]  == Q)]
+    if Q == 0:
+        this_df = df[(df["StartAt"] == start_node) & (df["EndAt"] == end_node)]
+    else:
+        this_df = df[(df["StartAt"] == start_node) & (df["EndAt"] == end_node) & (df["quartile"]  == Q)]
     
     trajs = []
     count = 0
@@ -199,6 +251,34 @@ def do_reeb_for_explore_node(path, salient_node, use_turns=False):
     visited = {}
     generate_reeb_tree(0, salient_node, trajs, [i for i in range(len(trajs))], G, visited, SUCCESS="IMPOSSIBLE")
     return G, len(trajs)
+
+from reeb_utils import collapse_traj, generate_reeb_tree, all_traj_same
+
+def do_reeb_for_df(this_df, use_turns=True):
+    # Check that all of the start nodes are the same
+    assert len(set(this_df["StartAt"])) == 1
+    start_node = this_df["StartAt"].iloc[0]
+    end_node = this_df["EndAt"].iloc[0]
+    
+    trajs = []
+    count = 0
+    for _, row in this_df.iterrows():
+        path = row["e_paths"] if use_turns else row["paths"]
+        if path[-2:] == "NA": path = path[:-2] # this happens if the test ends unsuccessfully
+        
+        states = path.split()
+        if not use_turns: states = collapse_traj(states)
+        trajs.append(states)
+        count += 1
+        # if count == 15: break
+
+    visited = {}
+
+    G = nx.Graph()
+    G.add_node(start_node + "_0", color="red", end=False)
+
+    generate_reeb_tree(0, start_node, trajs, [i for i in range(len(trajs))], G, visited, SUCCESS=end_node[0], DEBUG=False)
+    return G
 
 ######################################
 ## Plotting functions               ##
@@ -308,3 +388,31 @@ def plot_reeb_explore(df, person, salient_node, q="", save=True, use_turns=True)
         plt.close()
     else:
         plt.show()
+
+def plot_treeb_special_path(G, special_edges, with_nodes=False):
+    fig = plt.figure(figsize=(10,5))
+    this_ax = plt.gca()
+
+    pos = graphviz_layout(G, prog="dot")
+    
+    edges = G.edges()
+    weights = [G[u][v]['weight'] * .4 for u,v in edges]
+
+    edge_colors = {}
+    for edge in G.edges():
+        if edge in special_edges:
+            edge_colors[edge] = 'magenta'
+        else:
+            edge_colors[edge] = 'black'
+
+    nodes = G.nodes()
+    n_labels = {n: n for n in G}
+    n_colors = [G.nodes[n].get("color", "blue") for n in nodes]
+
+    nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color=edge_colors.values(), width=weights, ax=this_ax)
+    if with_nodes:
+        nx.draw_networkx_nodes(G, pos, node_color=n_colors, node_size=500, alpha=0.7, ax=this_ax)
+        nx.draw_networkx_labels(G, pos, labels=n_labels, font_size=13, ax=this_ax) # font_weight="bold",
+
+    this_ax.axis("off")
+    plt.show()

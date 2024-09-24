@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
+import numpy as np
 import os
 import pandas as pd
 import pydot
@@ -147,6 +148,54 @@ def collapse_traj(traj):
             new_traj.append(t)
     return new_traj
 
+def extract_tree_features(graph, root):
+    # Number of Nodes
+    num_nodes = graph.number_of_nodes()
+    
+    # Number of Edges
+    num_edges = graph.number_of_edges()
+    
+    # Tree Depth (Height)
+    def tree_depth(graph, root):
+        depths = nx.single_source_shortest_path_length(graph, root)
+        return max(depths.values())
+    
+    depth = tree_depth(graph, root)
+    
+    # Average Node Degree
+    avg_degree = np.mean([degree for node, degree in graph.degree()])
+    
+    # Diameter
+    diameter = nx.diameter(graph)
+    
+    # Number of Leaves
+    num_leaves = sum(1 for node in graph.nodes() if graph.degree(node) == 1)
+    
+    # Average Path Length
+    avg_path_length = nx.average_shortest_path_length(graph)
+    
+    # Branching Factor
+    branching_factors = [len(list(graph.neighbors(node))) for node in graph.nodes()]
+    avg_branching_factor = np.mean(branching_factors)
+    
+    # Clustering Coefficient
+    clustering_coeffs = nx.clustering(graph)
+    avg_clustering_coeff = np.mean(list(clustering_coeffs.values()))
+    
+    # Put all features in a list
+    features = [
+        num_nodes,
+        num_edges,
+        depth,
+        avg_degree,
+        diameter,
+        num_leaves,
+        avg_path_length,
+        avg_branching_factor,
+        avg_clustering_coeff
+    ]
+    
+    return features
 
 ######################################
 ## Specific generation functions    ##

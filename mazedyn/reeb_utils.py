@@ -203,6 +203,34 @@ def do_reeb_for_explore_node(path, salient_node, use_turns=False):
     generate_reeb_tree(0, salient_node, trajs, [i for i in range(len(trajs))], G, visited, SUCCESS="IMPOSSIBLE")
     return G, len(trajs)
 
+from reeb_utils import collapse_traj, generate_reeb_tree, all_traj_same
+
+def do_reeb_for_df(this_df, use_turns=True):
+    # Check that all of the start nodes are the same
+    assert len(set(this_df["StartAt"])) == 1
+    start_node = this_df["StartAt"].iloc[0]
+    end_node = this_df["EndAt"].iloc[0]
+    
+    trajs = []
+    count = 0
+    for _, row in this_df.iterrows():
+        path = row["e_paths"] if use_turns else row["paths"]
+        if path[-2:] == "NA": path = path[:-2] # this happens if the test ends unsuccessfully
+        
+        states = path.split()
+        if not use_turns: states = collapse_traj(states)
+        trajs.append(states)
+        count += 1
+        # if count == 15: break
+
+    visited = {}
+
+    G = nx.Graph()
+    G.add_node(start_node + "_0", color="red", end=False)
+
+    generate_reeb_tree(0, start_node, trajs, [i for i in range(len(trajs))], G, visited, SUCCESS=end_node[0], DEBUG=False)
+    return G
+
 ######################################
 ## Plotting functions               ##
 ##      for test and explore.       ##
@@ -311,3 +339,31 @@ def plot_reeb_explore(df, person, salient_node, q="", save=True, use_turns=True)
         plt.close()
     else:
         plt.show()
+
+def plot_treeb_special_path(G, special_edges, with_nodes=False):
+    fig = plt.figure(figsize=(10,5))
+    this_ax = plt.gca()
+
+    pos = graphviz_layout(G, prog="dot")
+    
+    edges = G.edges()
+    weights = [G[u][v]['weight'] * .4 for u,v in edges]
+
+    edge_colors = {}
+    for edge in G.edges():
+        if edge in special_edges:
+            edge_colors[edge] = 'magenta'
+        else:
+            edge_colors[edge] = 'black'
+
+    nodes = G.nodes()
+    n_labels = {n: n for n in G}
+    n_colors = [G.nodes[n].get("color", "blue") for n in nodes]
+
+    nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color=edge_colors.values(), width=weights, ax=this_ax)
+    if with_nodes:
+        nx.draw_networkx_nodes(G, pos, node_color=n_colors, node_size=500, alpha=0.7, ax=this_ax)
+        nx.draw_networkx_labels(G, pos, labels=n_labels, font_size=13, ax=this_ax) # font_weight="bold",
+
+    this_ax.axis("off")
+    plt.show()

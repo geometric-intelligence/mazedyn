@@ -5,7 +5,7 @@ import pandas as pd
 from scipy import stats 
 from scipy.spatial.distance import pdist
 
-from reeb_utils import do_reeb_for_start_end
+from reeb_utils import collapse_traj, do_reeb_for_start_end
 
 def load_test_df(filename="data/MLINDIV_train_full.csv"):
     # load data into dataframe
@@ -34,6 +34,31 @@ def load_subject_df(filename="data/MLINDIV_subject_info.csv"):
 
     return subject_df
 
+def compute_extended_explore_traj(e_path):
+    # need to replace V-east (V2) with Y and F-south (F3) with N
+    # because they are facing and can see the object from there
+    path = e_path.replace("V2", "Y2")
+    path = e_path.replace("F3", "N3")
+    
+    nodes = path.split()
+    nodes.remove("NA")
+    nodes = [n[0] for n in nodes]
+
+    return "".join(nodes)
+    
+def compute_explore_traj(e_path):
+    # need to replace V-east (V2) with Y and F-south (F3) with N
+    # because they are facing and can see the object from there
+    path = e_path.replace("V2", "Y2")
+    path = e_path.replace("F3", "N3")
+    
+    nodes = path.split()
+    nodes.remove("NA")
+    nodes = [n[0] for n in nodes]
+
+    return "".join(collapse_traj(nodes))
+
+
 def compute_flow_trees_by_q(test_df):
     flow_trees_by_q = {i+1: [] for i in range(4)}
     accs = []
@@ -59,7 +84,6 @@ def vector_statistic(x, y, axis):
     
     # Calculate Euclidean distance
     return np.linalg.norm(mean_x - mean_y, axis=-1)
-
 
 def run_hypothesis_tests(reps_by_q):
     q12_reps = np.concatenate(reps_by_q[0:2, :])

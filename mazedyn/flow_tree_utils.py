@@ -47,6 +47,11 @@ def collapse_traj(traj):
             new_traj.append(t)
     return new_traj
 
+def generate_traj_from_path(path):
+    states = path.split()
+    states[-1] = "."+states[-1]
+    states = collapse_traj(states)
+    return states
 
 def generate_trajs_from_df(this_df, use_turns=False): 
     trajs = []
@@ -141,7 +146,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
 
     return G
 
-def plot_flow_tree(G, title, ax, just_edges=False):
+def plot_flow_tree(G, title, ax, just_edges=False, special_edges=None):
     pos = nx.nx_agraph.graphviz_layout(G, prog="dot")#graphviz_layout(G, prog="dot")
 
     # Draw nodes
@@ -151,7 +156,16 @@ def plot_flow_tree(G, title, ax, just_edges=False):
     edge_weights = [G[u][v]['weight'] for u, v in G.edges()]
     max_weight = max(edge_weights) if edge_weights else 1
     normalized_weights = [6 * w/max_weight for w in edge_weights]  # Scale for visualization
-    nx.draw_networkx_edges(G, pos, width=normalized_weights, ax=ax)
+    if special_edges is None:
+        nx.draw_networkx_edges(G, pos, width=normalized_weights, ax=ax)
+    else:
+        edge_colors = {}
+        for edge in G.edges():
+            if edge in special_edges:
+                edge_colors[edge] = 'magenta'
+            else:
+                edge_colors[edge] = 'black'
+        nx.draw_networkx_edges(G, pos, width=normalized_weights, edge_color=edge_colors.values(), ax=ax)
 
     if not just_edges:
         n_colors = [G.nodes[n].get("color", "blue") for n in nodes]
@@ -166,4 +180,60 @@ def plot_flow_tree(G, title, ax, just_edges=False):
         nx.draw_networkx_labels(G, pos, labels, ax=ax)
         
     ax.axis("off")
-    ax.set_title(title)    
+    ax.set_title(title)  
+
+
+def plot_treeb_special_path(G, special_edges, with_nodes=False):
+    fig = plt.figure(figsize=(10,5))
+    this_ax = plt.gca()
+
+    pos = graphviz_layout(G, prog="dot")
+    
+    edges = G.edges()
+    weights = [G[u][v]['weight'] * .4 for u,v in edges]
+
+    edge_colors = {}
+    for edge in G.edges():
+        if edge in special_edges:
+            edge_colors[edge] = 'magenta'
+        else:
+            edge_colors[edge] = 'black'
+
+    nodes = G.nodes()
+    n_labels = {n: n for n in G}
+    n_colors = [G.nodes[n].get("color", "blue") for n in nodes]
+
+    nx.draw_networkx_edges(G, pos, edgelist=edges, edge_color=edge_colors.values(), width=weights, ax=this_ax)
+    if with_nodes:
+        nx.draw_networkx_nodes(G, pos, node_color=n_colors, node_size=500, alpha=0.7, ax=this_ax)
+        nx.draw_networkx_labels(G, pos, labels=n_labels, font_size=13, ax=this_ax) # font_weight="bold",
+
+    this_ax.axis("off")
+    plt.show()  
+
+
+## For Explore
+
+def compute_extended_explore_traj(e_path):
+    # need to replace V-east (V2) with Y and F-south (F3) with N
+    # because they are facing and can see the object from there
+    path = e_path.replace("V2", "Y2")
+    path = e_path.replace("F3", "N3")
+    
+    nodes = path.split()
+    nodes.remove("NA")
+    nodes = [n[0] for n in nodes]
+
+    return "".join(nodes)
+    
+def compute_explore_traj(e_path):
+    # need to replace V-east (V2) with Y and F-south (F3) with N
+    # because they are facing and can see the object from there
+    path = e_path.replace("V2", "Y2")
+    path = e_path.replace("F3", "N3")
+    
+    nodes = path.split()
+    nodes.remove("NA")
+    nodes = [n[0] for n in nodes]
+
+    return "".join(collapse_traj(nodes))

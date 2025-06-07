@@ -1,6 +1,54 @@
 """Utillity functions for generating, manipulating and visualising Flow Trees."""
 
 import networkx as nx
+import pandas as pd
+
+OBJECTS = "OYNKIWLAP"
+
+def load_test_df(filename="data/MLINDIV_train_full.csv",
+                 remove_incompletes=True,
+                 include_subject_info=True,
+                 subject_filename="data/MLINDIV_subject_info.csv"):
+    df = pd.read_csv(filename)
+
+    # load test df
+    test_df = df[df["eprocs"].str.contains("Test")]
+
+    # remove incompletes
+    if remove_incompletes:
+        clean_test_df = test_df.copy()
+
+        for subject, group in test_df.groupby("Subject"):
+            if group.shape[0] < 48:
+                clean_test_df = clean_test_df[clean_test_df["Subject"] != subject].copy()
+
+        test_df = clean_test_df
+
+    if include_subject_info:
+        subject_df = pd.read_csv(subject_filename)
+        subject_df["Subject"] = pd.to_numeric(subject_df["Spatial Neuro ID"], errors="coerce")
+        subject_df = subject_df[~subject_df["Subject"].isna()]
+
+        subject_df["is_man"] = (subject_df["Sex"] == "M")
+
+        test_df = pd.merge(test_df, subject_df, on="Subject")
+
+
+    test_df["subj_mean_acc"] = test_df.groupby("Subject")["accuracy"].transform("mean")
+    test_df["path_mean_acc"] = test_df.groupby(["StartAt", "EndAt"])["accuracy"].transform("mean")
+
+    test_df['quartile'] = (
+        pd.qcut(test_df['subj_mean_acc'], 4, labels=[1, 2, 3, 4])
+    )
+
+    test_df["path_mean_acc_by_Q"] = test_df.groupby(["StartAt", "EndAt", "quartile"])["accuracy"].transform("mean")
+
+    test_df["trajs"] = test_df["paths"].apply(generate_traj_from_path)
+    test_df["accuracy"] = test_df["accuracy"].astype(bool)
+
+    test_df["StartEnd"] = test_df["StartAt"] + "_" + test_df["EndAt"]
+
+    return test_df
 
 def all_traj_same(trajs, which_trajs, max_traj_len):
     """Determines whether any trajectory differs from the others.
@@ -146,7 +194,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
 
     return G
 
-def plot_flow_tree(G, title, ax, just_edges=False, special_edges=None):
+def plot_flow_tree(G, title, ax, no_title=False, just_edges=False, special_edges=None, edge_boldness=1.0):
     pos = nx.nx_agraph.graphviz_layout(G, prog="dot")#graphviz_layout(G, prog="dot")
 
     # Draw nodes
@@ -155,7 +203,7 @@ def plot_flow_tree(G, title, ax, just_edges=False, special_edges=None):
     # Draw edges with weights
     edge_weights = [G[u][v]['weight'] for u, v in G.edges()]
     max_weight = max(edge_weights) if edge_weights else 1
-    normalized_weights = [6 * w/max_weight for w in edge_weights]  # Scale for visualization
+    normalized_weights = [edge_boldness * 6 * w/max_weight for w in edge_weights]  # Scale for visualization
     if special_edges is None:
         nx.draw_networkx_edges(G, pos, width=normalized_weights, ax=ax)
     else:
@@ -180,7 +228,8 @@ def plot_flow_tree(G, title, ax, just_edges=False, special_edges=None):
         nx.draw_networkx_labels(G, pos, labels, ax=ax)
         
     ax.axis("off")
-    ax.set_title(title)  
+    if not no_title:
+        ax.set_title(title)  
 
 
 def plot_treeb_special_path(G, special_edges, with_nodes=False):

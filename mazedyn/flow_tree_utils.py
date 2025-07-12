@@ -26,13 +26,23 @@ def load_test_df(filename="data/MLINDIV_train_full.csv",
 
     if include_subject_info:
         subject_df = pd.read_csv(subject_filename)
-        subject_df["Subject"] = pd.to_numeric(subject_df["Spatial Neuro ID"], errors="coerce")
-        subject_df = subject_df[~subject_df["Subject"].isna()]
 
-        subject_df["is_man"] = (subject_df["Sex"] == "M")
+        subject_df = subject_df[~subject_df["Spatial Neuro ID"].isna()]
 
-        test_df = pd.merge(test_df, subject_df, on="Subject")
+        is_man_map = {}
+        age_map = {}
+        for _, row in subject_df.iterrows():
+            subj_id = row["Spatial Neuro ID"]
 
+            # Data handling bc the csv is interesting
+            if type(subj_id) == str and subj_id != "Subject Counts":
+                subj_id = int(subj_id.split("S")[0])
+
+            is_man_map[subj_id] = row["Sex"] == "M"
+            age_map[subj_id] = row["Age"]
+
+        test_df["is_man"] = test_df["Subject"].apply(lambda x: is_man_map[x])
+        test_df["age"] = test_df["Subject"].apply(lambda x: age_map[x])
 
     test_df["subj_mean_acc"] = test_df.groupby("Subject")["accuracy"].transform("mean")
     test_df["path_mean_acc"] = test_df.groupby(["StartAt", "EndAt"])["accuracy"].transform("mean")

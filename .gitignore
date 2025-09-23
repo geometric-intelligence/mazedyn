@@ -1,8 +1,9 @@
 .DS_Store
+figures/**
 mazedyn/.DS_Store
 mazedyn/.ipynb_checkpoints/**
 mazedyn/__pycache__/**
 mazedyn/animations/**
 mazedyn/data/**
 mazedyn/figures/**
-
+papers/

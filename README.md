@@ -12,7 +12,7 @@
 * conda install pydot
 
 ### Data download:
-* Data is located here: https://osf.io/zp5ge/
+* Data is located here under Maze-Learning Task: https://osf.io/dujhy/
 * Download the following files and put in mazedyn/data/
     * MLINDIV_behavioral_full.csv
     * MLINDIV_subject_info.csv

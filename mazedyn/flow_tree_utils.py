@@ -151,7 +151,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
                 traj = trajs[group_member]
                 if index + 1 >= len(traj): 
                     # THIS GUY IS DONE
-                    done["".join(traj)] = done.get("".join(traj), []).copy() + [group_member]
+                    done["+".join(traj)] = done.get("+".join(traj), []).copy() + [group_member]
                 else:
                     new_node = traj[index]     
                     new_subgroup_split[new_node] = new_subgroup_split.get(new_node, []).copy() + [group_member]
@@ -178,7 +178,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
                     # CAN COLLAPSE NEW BOY
                     max_traj_len = max([len(trajs[t]) for t in new_which_trajs])
                     if len(group) == 1 or all_traj_same(trajs, new_which_trajs, max_traj_len):
-                        end_node = "".join(trajs[new_which_trajs[0]])#[-1]
+                        end_node = "+".join(trajs[new_which_trajs[0]])#[-1]
                         
                         if DEBUG: print(f"BASE CASE - GROUP UNIFORM: {new_which_trajs}, last: {end_node}")
 
@@ -187,7 +187,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
                         G.add_edge(parent, end_node, weight=len(new_which_trajs))
             
                     else:
-                        new_node = "".join(trajs[new_which_trajs[0]][:index+1])
+                        new_node = "+".join(trajs[new_which_trajs[0]][:index+1])
                     
                         G.add_node(new_node, color="blue", end=False)
                         if DEBUG: print(f"ADDING NEW BLUE NODE {new_node}")

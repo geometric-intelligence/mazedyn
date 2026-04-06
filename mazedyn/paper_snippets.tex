@@ -1,0 +1,210 @@
+% ============================================================
+% PASTE-READY SNIPPETS FOR Wikispeedia_Flow_Trees_PLOSOne.tex
+% Generated 2026-03-17
+% ============================================================
+% Each section is labeled with where it goes in the .tex file.
+% Search for the placeholder text shown in [[ ]] to find insertion points.
+% ============================================================
+
+
+%% ── ABSTRACT ────────────────────────────────────────────────────────────────
+%% Replace everything between \begin{abstract} and \end{abstract}
+
+\begin{abstract}
+Understanding how collective navigation behavior emerges from the interaction between
+network topology and semantic knowledge is a central challenge in network science and
+cognitive science.
+We introduce \textit{Flow Trees}---a tree representation that encodes when and how
+groups of trajectories diverge through time---and apply them to Wikispeedia, an
+online game in which players navigate a curated semantic network of Wikipedia articles
+to reach a target.
+Using 70,770 human trajectories across 4,592 articles, we construct Flow Trees rooted
+at each of the 500 most frequently visited nodes and compare them to matched
+random-walker trajectories.
+We find that human navigation is more semantically structured than random walks:
+node traversal frequency correlates more strongly with lexical generality than with
+structural centrality, whereas the reverse holds for random walkers.
+Landmark articles---identified by structural out-degree, player traversal frequency,
+or lexical generality---produce shallower, more fan-like Flow Trees with higher
+branching factors, consistent with a ``zoom-out, home-in'' navigation strategy.
+This landmark signature is robust for structural and data-driven definitions but
+absent for semantic ones, suggesting that landmark behavior is driven by connectivity
+rather than word frequency.
+We introduce a Flow-Tree-derived landmark score (branching factor divided by depth)
+that identifies dynamically central nodes not captured by structural definitions alone.
+Finally, comparing forward and reverse Flow Trees reveals directional asymmetry:
+landmark nodes act as stronger convergence points than distributors, indicating that
+human navigation produces directed flow structures not present in random walks.
+\end{abstract}
+
+
+%% ── FIGURE 1 CAPTION ────────────────────────────────────────────────────────
+%% Replace the current Fig 1 caption ("Simple, high-level schematic.")
+
+\caption{\textbf{Flow Tree construction in Wikispeedia.}
+(A) In the Wikispeedia game, players navigate from a randomly assigned start article
+to a target article by following hyperlinks within a curated subset of Wikipedia
+(4,592 articles, 119,881 directed edges).
+An example game (start: \textit{Book}, target: \textit{Ocean}) with a sample
+trajectory is shown.
+(B) Flow Tree construction.
+All trajectories that pass through a given root node are collected.
+At each step, trajectories are grouped by their next-visited article; when multiple
+distinct choices occur, the group splits and a branching node is created.
+The process continues recursively until trajectories terminate or become singletons.
+\textit{Forward} Flow Trees encode the structure of outgoing trajectories;
+\textit{reverse} Flow Trees are built from time-reversed trajectories and encode
+the structure of incoming flow.
+}
+
+
+%% ── FIGURE 2 CAPTION ────────────────────────────────────────────────────────
+%% Replace current Fig 2 caption entirely.
+%% NOTE: The figure sketch embedded in the draft (labeled "Fig 2: Semantics vs.
+%% structure. What drives human behavior?") shows the correlation/centrality
+%% analysis -- that is what this caption describes. The LaTeX caption text
+%% currently says "Landmark vs. non-landmark Flow Trees", which belongs to
+%% Fig 3. Swap accordingly.
+
+\caption{\textbf{Semantic and structural drivers of human navigation.}
+(A) Three null models used to isolate human collective knowledge from underlying
+graph structure: a uniform random walker (coin-flip), a structural random walker
+(next node chosen proportionally to out-degree), and a semantic random walker
+(next node chosen proportionally to Zipf word frequency of the article title).
+(B) Log-scale scatter plots comparing per-node traversal counts to four structural
+centrality measures (degree, betweenness, closeness, PageRank) and one semantic
+measure (mean Zipf frequency of article-title words), shown separately for human
+players and matched random walkers.
+Human traversal counts correlate more strongly with lexical frequency than random
+counts do, while random-walker counts correlate more strongly with every structural
+centrality measure.
+This dissociation indicates that human navigation reflects semantic knowledge
+beyond what can be explained by graph structure alone.
+}
+
+
+%% ── FIGURE 3 CAPTION ────────────────────────────────────────────────────────
+%% Replace current Fig 3 caption entirely.
+%% NOTE: The embedded sketch (labeled "Fig 3: Landmark articles have distinct
+%% dynamical signatures") shows the full landmark analysis -- violin plots,
+%% FT score scatter, gallery. The current LaTeX caption says "Human vs. random
+%% flow", which is wrong. Replace with the text below.
+
+\caption{\textbf{Landmark articles have distinct dynamical signatures.}
+(A) Schematic of the conjectured ``zoom-out, home-in'' navigation strategy:
+players first navigate to a highly connected hub article, then follow a
+semantically guided path toward the target.
+(B) Empirical support for the zoom-in hypothesis: distribution of trajectory steps
+before and after first arrival at a high-degree hub, showing that players reach
+landmark nodes early in their paths.
+(C) Overlap among three landmark definitions---data-driven (top 10\% by player
+traversal frequency), structural (top 10\% by out-degree), and semantic (top 10\% by
+mean Zipf word frequency)---shown as an UpSet plot.
+Six articles appear in all three definitions: \textit{United States}, \textit{Water},
+\textit{South America}, \textit{London}, \textit{Human}, and \textit{World War II}.
+(D) Representative forward Flow Trees for landmark and non-landmark articles under
+human and random-walker trajectories.
+Landmark Flow Trees are wider and shallower (fan-like), while non-landmark trees
+show deeper sequential structure.
+(E) Violin plots of five Flow Tree metrics (number of nodes, leaves, depth, diameter,
+average branching factor) for landmark vs.\ non-landmark articles, separated by
+landmark definition (rows) and trajectory type (human vs.\ random, colors).
+Landmark articles defined by structural or data-driven criteria show significantly
+higher branching factor and lower depth (see Table~1); semantic landmarks do not
+show a consistent pattern across metrics.
+(F) Flow-Tree-derived landmark score (mean branching factor / mean depth) plotted
+against log out-degree, with points colored by landmark-definition membership.
+Articles with high FT scores but low out-degree are dynamically central but
+structurally peripheral; a selection of these FT-only nodes is listed.
+(G) Gallery of forward Flow Trees for the union of the top-5 articles per definition
+(all four definitions), sorted left-to-right by number of definitions claiming the
+article, then by FT score.
+Border color and membership dots beneath each panel indicate definition membership
+(blue: structural; red: data-driven; green: semantic; purple: FT score; amber
+border: in two or more definitions).
+}
+
+
+%% ── FIGURE 4 CAPTION ────────────────────────────────────────────────────────
+%% Replace current Fig 4 caption.
+
+\caption{\textbf{Forward--reverse asymmetry reveals directional flow structure.}
+(A) Three representative node types shown with forward (left) and reverse (right)
+Flow Trees.
+\textit{Symmetric fans} (top) exhibit high branching factor in both directions,
+indicating that trajectories both arrive from and depart to diverse neighbors.
+\textit{Symmetric hallways} (middle) show high depth in both directions,
+corresponding to articles on extended, stereotyped paths.
+\textit{Asymmetric} nodes (bottom) differ markedly between directions, indicating
+directional funneling.
+(B) Forward (x-axis) vs.\ reverse (y-axis) branching factor and diameter for
+each article in the top-500, colored by landmark type (structural, data-driven,
+non-landmark).
+Points near the diagonal indicate symmetric flow; deviations indicate directionality.
+Landmark articles cluster above the diagonal in branching factor: trajectories
+converge on landmarks from more diverse directions than they depart from them,
+suggesting landmarks act as stronger attractors than distributors.
+(C) The same forward--reverse scatter separated by trajectory type (human vs.\
+random walker), with 1.5$\sigma$ confidence ellipses.
+Random-walker trajectories cluster near the diagonal; human trajectories show
+greater asymmetry, particularly for landmark nodes, reflecting the goal-directed
+strategy of funneling through hub articles.
+}
+
+
+%% ── IN-TEXT FIXES ───────────────────────────────────────────────────────────
+
+%% 1. RESULTS SECTION OPENER
+%% Find: "with high entropy incoming and outgoing. Nice. [add anything else??]"
+%% Replace with:
+
+with high entropy incoming and outgoing flow.
+We also examine directional asymmetry between forward and reverse Flow Trees,
+showing that landmark nodes function as stronger convergence points than
+distributors---a signature absent in random walkers.
+
+%% 2. CENTRALITY DEFINITIONS (in "Untangling semantic and structural influences")
+%% Find: "degree centrality (what is), betweenness centrality (what is), closeness
+%% centrality (what is), and page rank."
+%% Replace with:
+
+degree centrality (fraction of total edges incident to each node),
+betweenness centrality (fraction of shortest paths passing through each node),
+closeness centrality (inverse of the mean shortest-path distance to all other nodes),
+and PageRank (stationary probability of a random walk on the graph).
+
+%% 3. BODY TEXT FIGURE REFERENCE FIX
+%% Find (line ~154): "See Fig 2 for a visualization of a representative sample."
+%% This sentence is in the landmark analysis section -- it refers to representative
+%% flow trees. Change to:
+
+See Fig.~3D for a visualization of a representative sample.
+
+%% 4. BODY TEXT FIGURE REFERENCE FIX
+%% Find (line ~176): "compare Flow Trees constructed from human trajectories to
+%% those generated by random walkers (see Fig 3)"
+%% Change to:
+
+compare Flow Trees constructed from human trajectories to those generated
+by random walkers (see Fig.~3E)
+
+%% 5. "RABBIT HOLE" SECTION HEADER
+%% The section titled "Rabbit hole" (BHV space content) reads as an informal aside.
+%% Either remove the heading or rename it:
+
+\subsubsection*{Metric structure of Flow Tree space}
+
+%% 6. ACKNOWLEDGMENTS
+%% Find: "We thank Dale Zhou and Aaron[[TODO]] their feedback"
+%% Fill in Aaron's last name. Placeholder:
+
+We thank Dale Zhou and Aaron \textbf{[LAST NAME]} for their feedback and
+comments on the manuscript.
+
+%% 7. FIG REFERENCE IN DIRECTIONALITY SECTION
+%% Find: "See Fig 4A for an example of these three types."
+%% Change to (already correct number, just standardize format):
+
+See Fig.~4A for examples of these three types.
+
+%% ── END OF SNIPPETS ─────────────────────────────────────────────────────────

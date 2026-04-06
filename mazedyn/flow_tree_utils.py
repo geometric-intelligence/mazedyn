@@ -416,7 +416,17 @@ def get_matched_random_walk(G, start_node, walk_length):
     for _ in range(walk_length):
         neighbors = list(G.neighbors(current_node))
         if len(neighbors) == 0:
-            current_node = trajectory[-2]
+            # Dead end — backtrack to the last node that had outgoing edges
+            backtrack_idx = len(trajectory) - 2
+            while backtrack_idx >= 0:
+                if len(list(G.neighbors(trajectory[backtrack_idx]))) > 0:
+                    current_node = trajectory[backtrack_idx]
+                    break
+                backtrack_idx -= 1
+            else:
+                # No valid node found (start itself is a dead end), stay put
+                trajectory.append(current_node)
+                continue
         else:
             current_node = random.choice(neighbors)
         trajectory.append(current_node)

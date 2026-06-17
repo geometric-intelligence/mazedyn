@@ -12,7 +12,7 @@
 * conda install pydot
 
 ### Data download:
-* Data is located here: https://osf.io/zp5ge/
+* Data is located here under Maze-Learning Task: https://osf.io/dujhy/
 * Download the following files and put in mazedyn/data/
     * MLINDIV_behavioral_full.csv
     * MLINDIV_subject_info.csv
@@ -28,4 +28,5 @@ The code is organised into seven main notebooks, each of which concern a main ap
 * 4_backbone.ipynb -- backbone-specific analysis (Figure 6)
 * 5_ego_v_allocentric.ipynb -- additional exploration of discretisation        
 * 6_start_node_end_node_trees.ipynb -- node Flow Trees and analysis (Figure 7)
+* 7_mice_maze_analysis_3C.ipynb -- analysis of Rosenburg mice dataset (Figure 10)
 * flow_tree_utils.py

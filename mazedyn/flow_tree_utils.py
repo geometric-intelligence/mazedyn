@@ -10,6 +10,18 @@ from scipy.stats import norm
 OBJECTS = "OYNKIWLAP"
 
 
+def load_explore_df(filename="data/MLINDIV_train_full.csv"):
+    df = pd.read_csv(filename)
+    return df[df["eprocs"].str.contains("Explore")]
+
+
+def load_test_df(
+    filename="data/MLINDIV_train_full.csv",
+    remove_incompletes=True,
+    include_subject_info=True,
+    subject_filename="data/MLINDIV_subject_info.csv",
+):
+
 def load_test_df(
     filename="data/MLINDIV_train_full.csv",
     remove_incompletes=True,
@@ -27,6 +39,9 @@ def load_test_df(
 
         for subject, group in test_df.groupby("Subject"):
             if group.shape[0] < 48:
+                clean_test_df = clean_test_df[
+                    clean_test_df["Subject"] != subject
+                ].copy()
                 clean_test_df = clean_test_df[
                     clean_test_df["Subject"] != subject
                 ].copy()
@@ -57,9 +72,16 @@ def load_test_df(
     test_df["path_mean_acc"] = test_df.groupby(["StartAt", "EndAt"])[
         "accuracy"
     ].transform("mean")
+    test_df["path_mean_acc"] = test_df.groupby(["StartAt", "EndAt"])[
+        "accuracy"
+    ].transform("mean")
 
     test_df["quartile"] = pd.qcut(test_df["subj_mean_acc"], 4, labels=[1, 2, 3, 4])
+    test_df["quartile"] = pd.qcut(test_df["subj_mean_acc"], 4, labels=[1, 2, 3, 4])
 
+    test_df["path_mean_acc_by_Q"] = test_df.groupby(["StartAt", "EndAt", "quartile"])[
+        "accuracy"
+    ].transform("mean")
     test_df["path_mean_acc_by_Q"] = test_df.groupby(["StartAt", "EndAt", "quartile"])[
         "accuracy"
     ].transform("mean")
@@ -171,7 +193,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
                 traj = trajs[group_member]
                 if index + 1 >= len(traj):
                     # THIS GUY IS DONE
-                    done["+".join(traj)] = done.get("+".join(traj), []).copy() + [
+                    done["".join(traj)] = done.get("".join(traj), []).copy() + [
                         group_member
                     ]
                 else:
@@ -210,7 +232,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
                     if len(group) == 1 or all_traj_same(
                         trajs, new_which_trajs, max_traj_len
                     ):
-                        end_node = "+".join(trajs[new_which_trajs[0]])  # [-1]
+                        end_node = "".join(trajs[new_which_trajs[0]])  # [-1]
 
                         if DEBUG:
                             print(
@@ -222,7 +244,7 @@ def generate_flow_tree_from_trajs(trajs, END_NODE="BLAH", DEBUG=False):
                         G.add_edge(parent, end_node, weight=len(new_which_trajs))
 
                     else:
-                        new_node = "+".join(trajs[new_which_trajs[0]][: index + 1])
+                        new_node = "".join(trajs[new_which_trajs[0]][: index + 1])
 
                         G.add_node(new_node, color="blue", end=False)
                         if DEBUG:
@@ -323,7 +345,21 @@ def plot_treeb_special_path(G, special_edges, with_nodes=False):
         width=weights,
         ax=this_ax,
     )
+    nx.draw_networkx_edges(
+        G,
+        pos,
+        edgelist=edges,
+        edge_color=edge_colors.values(),
+        width=weights,
+        ax=this_ax,
+    )
     if with_nodes:
+        nx.draw_networkx_nodes(
+            G, pos, node_color=n_colors, node_size=500, alpha=0.7, ax=this_ax
+        )
+        nx.draw_networkx_labels(
+            G, pos, labels=n_labels, font_size=13, ax=this_ax
+        )  # font_weight="bold",
         nx.draw_networkx_nodes(
             G, pos, node_color=n_colors, node_size=500, alpha=0.7, ax=this_ax
         )
@@ -333,9 +369,11 @@ def plot_treeb_special_path(G, special_edges, with_nodes=False):
 
     this_ax.axis("off")
     plt.show()
+    plt.show()
 
 
 ## For Explore
+
 
 
 def compute_extended_explore_traj(e_path):
@@ -344,6 +382,7 @@ def compute_extended_explore_traj(e_path):
     path = e_path.replace("V2", "Y2")
     path = e_path.replace("F3", "N3")
 
+
     nodes = path.split()
     nodes.remove("NA")
     nodes = [n[0] for n in nodes]
@@ -351,11 +390,14 @@ def compute_extended_explore_traj(e_path):
     return "".join(nodes)
 
 
+
+
 def compute_explore_traj(e_path):
     # need to replace V-east (V2) with Y and F-south (F3) with N
     # because they are facing and can see the object from there
     path = e_path.replace("V2", "Y2")
     path = e_path.replace("F3", "N3")
+
 
     nodes = path.split()
     nodes.remove("NA")

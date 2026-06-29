@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "Flow Tree"
+abstract: "A model for navigator dynamics and environmental complexity."
+authors:
+  - family-names: "Bertics"
+    given-names: "Abby"
+    orcid: "https://orcid.org/0009-0000-5081-4983"
+    affiliation: "University of California, Santa Barbara"
+version: 1.0.0
+date-released: 2026-06-29
+repository-code: "https://github.com/geometric-intelligence/mazedyn"

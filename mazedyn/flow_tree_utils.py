@@ -21,13 +21,6 @@ def load_test_df(
     include_subject_info=True,
     subject_filename="data/MLINDIV_subject_info.csv",
 ):
-
-def load_test_df(
-    filename="data/MLINDIV_train_full.csv",
-    remove_incompletes=True,
-    include_subject_info=True,
-    subject_filename="data/MLINDIV_subject_info.csv",
-):
     df = pd.read_csv(filename)
 
     # load test df
@@ -375,13 +368,11 @@ def plot_treeb_special_path(G, special_edges, with_nodes=False):
 ## For Explore
 
 
-
 def compute_extended_explore_traj(e_path):
     # need to replace V-east (V2) with Y and F-south (F3) with N
     # because they are facing and can see the object from there
     path = e_path.replace("V2", "Y2")
     path = e_path.replace("F3", "N3")
-
 
     nodes = path.split()
     nodes.remove("NA")
@@ -390,14 +381,11 @@ def compute_extended_explore_traj(e_path):
     return "".join(nodes)
 
 
-
-
 def compute_explore_traj(e_path):
     # need to replace V-east (V2) with Y and F-south (F3) with N
     # because they are facing and can see the object from there
     path = e_path.replace("V2", "Y2")
     path = e_path.replace("F3", "N3")
-
 
     nodes = path.split()
     nodes.remove("NA")

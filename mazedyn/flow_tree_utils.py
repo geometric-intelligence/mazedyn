@@ -1,7 +1,11 @@
 """Utillity functions for generating, manipulating and visualising Flow Trees."""
 
+import random
+
 import networkx as nx
+import numpy as np
 import pandas as pd
+from scipy.stats import norm
 
 OBJECTS = "OYNKIWLAP"
 
@@ -28,6 +32,9 @@ def load_test_df(
 
         for subject, group in test_df.groupby("Subject"):
             if group.shape[0] < 48:
+                clean_test_df = clean_test_df[
+                    clean_test_df["Subject"] != subject
+                ].copy()
                 clean_test_df = clean_test_df[
                     clean_test_df["Subject"] != subject
                 ].copy()
@@ -58,9 +65,16 @@ def load_test_df(
     test_df["path_mean_acc"] = test_df.groupby(["StartAt", "EndAt"])[
         "accuracy"
     ].transform("mean")
+    test_df["path_mean_acc"] = test_df.groupby(["StartAt", "EndAt"])[
+        "accuracy"
+    ].transform("mean")
 
     test_df["quartile"] = pd.qcut(test_df["subj_mean_acc"], 4, labels=[1, 2, 3, 4])
+    test_df["quartile"] = pd.qcut(test_df["subj_mean_acc"], 4, labels=[1, 2, 3, 4])
 
+    test_df["path_mean_acc_by_Q"] = test_df.groupby(["StartAt", "EndAt", "quartile"])[
+        "accuracy"
+    ].transform("mean")
     test_df["path_mean_acc_by_Q"] = test_df.groupby(["StartAt", "EndAt", "quartile"])[
         "accuracy"
     ].transform("mean")
@@ -324,7 +338,21 @@ def plot_treeb_special_path(G, special_edges, with_nodes=False):
         width=weights,
         ax=this_ax,
     )
+    nx.draw_networkx_edges(
+        G,
+        pos,
+        edgelist=edges,
+        edge_color=edge_colors.values(),
+        width=weights,
+        ax=this_ax,
+    )
     if with_nodes:
+        nx.draw_networkx_nodes(
+            G, pos, node_color=n_colors, node_size=500, alpha=0.7, ax=this_ax
+        )
+        nx.draw_networkx_labels(
+            G, pos, labels=n_labels, font_size=13, ax=this_ax
+        )  # font_weight="bold",
         nx.draw_networkx_nodes(
             G, pos, node_color=n_colors, node_size=500, alpha=0.7, ax=this_ax
         )
@@ -333,6 +361,7 @@ def plot_treeb_special_path(G, special_edges, with_nodes=False):
         )  # font_weight="bold",
 
     this_ax.axis("off")
+    plt.show()
     plt.show()
 
 
@@ -363,3 +392,73 @@ def compute_explore_traj(e_path):
     nodes = [n[0] for n in nodes]
 
     return "".join(collapse_traj(nodes))
+
+
+def steiger_z_test(r12, r13, r23, n, alternative="two-sided"):
+    # Steiger's Z formula for comparing two dependent correlations
+    # compares corr 1-2 vs. corr 1-3
+
+    if n < 4:
+        raise ValueError("Sample size must be at least 4")
+
+    z_num = (r12 - r13) * np.sqrt((n - 3) * (1 + r23))
+    z_denom = 2 * (1 - r12**2 - r13**2 - r23**2 + 2 * r12 * r13 * r23)
+    z_denom = np.sqrt(z_denom)
+
+    if z_denom == 0:
+        raise ValueError("Denominator is zero — check your correlations.")
+
+    z = z_num / z_denom
+
+    # Choose p-value based on test direction
+    if alternative == "two-sided":
+        p = 2 * (1 - norm.cdf(abs(z)))
+    elif alternative == "greater":  # r12 > r13
+        p = 1 - norm.cdf(z)
+    elif alternative == "less":  # r12 < r13
+        p = norm.cdf(z)
+    else:
+        raise ValueError("alternative must be 'two-sided', 'greater', or 'less'")
+
+    return z, p
+
+
+def get_matched_random_walk(G, start_node, walk_length):
+    """
+    Simulates a random walk on a graph and returns nodes visited.
+
+    Parameters
+    ----------
+        G : nx.DiGraph
+            The networkx graph.
+        start_node : node in G
+        walk_length : int
+            The number of steps the walker takes.
+
+    Returns
+    ----------
+        trajectory : list[str]
+            A list of nodes visited.
+    """
+    trajectory = [start_node]
+    current_node = start_node
+
+    for _ in range(walk_length):
+        neighbors = list(G.neighbors(current_node))
+        if len(neighbors) == 0:
+            # Dead end — backtrack to the last node that had outgoing edges
+            backtrack_idx = len(trajectory) - 2
+            while backtrack_idx >= 0:
+                if len(list(G.neighbors(trajectory[backtrack_idx]))) > 0:
+                    current_node = trajectory[backtrack_idx]
+                    break
+                backtrack_idx -= 1
+            else:
+                # No valid node found (start itself is a dead end), stay put
+                trajectory.append(current_node)
+                continue
+        else:
+            current_node = random.choice(neighbors)
+        trajectory.append(current_node)
+
+    return trajectory
